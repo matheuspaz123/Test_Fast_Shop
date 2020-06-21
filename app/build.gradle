@@ -34,6 +34,8 @@ dependencies {
     // ViewModel e LiveData
     // https://developer.android.com/jetpack/androidx/releases/lifecycle
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
 
     // Retrofit
     // https://github.com/square/retrofit
