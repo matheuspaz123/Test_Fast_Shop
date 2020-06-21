@@ -24,23 +24,46 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         popularFilmes = findViewById(R.id.popular_filmes)
-        popularFilmes.layoutManager = LinearLayoutManager(
+        popularFilmesLayoutMgr = LinearLayoutManager(
             this,
             LinearLayoutManager.HORIZONTAL,
             false
         )
+        popularFilmes.layoutManager = popularFilmesLayoutMgr
         popularFilmesAdapter = FilmesAdapter(mutableListOf())
         popularFilmes.adapter = popularFilmesAdapter
 
         //api_key = ec69d673e213c2849cd207f63b94a622
+        getPopularMovies()
+    }
+
+    private fun getPopularMovies() {
         RepositorioFilme.getPopularMovies(
-            onSuccess = ::onPopularMoviesFetched,
-            onError = ::onError
+            popularFilmesPage,
+            ::onPopularMoviesFetched,
+            ::onError
         )
+    }
+
+    private fun attachPopularFilmesOnScrollListener() {
+        popularFilmes.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val totalItemCount = popularFilmesLayoutMgr.itemCount
+                val visibleItemCount = popularFilmesLayoutMgr.childCount
+                val firstVisibleItem = popularFilmesLayoutMgr.findFirstVisibleItemPosition()
+
+                if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
+                    popularFilmes.removeOnScrollListener(this)
+                    popularFilmesPage++
+                    getPopularMovies()
+                }
+            }
+        })
     }
 
     private fun onPopularMoviesFetched(filmes: MutableList<Filme>) {
         popularFilmesAdapter.updateFilmes(filmes)
+        attachPopularFilmesOnScrollListener()
 
     }
 
